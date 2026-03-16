@@ -1,0 +1,2136 @@
+<!-- index.html - Часть 1: Основная структура и стили CoinFlow Mini App -->
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoinFlow - Заработок на курицах</title>
+    
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --tg-theme-bg-color: #ffffff;
+            --tg-theme-text-color: #000000;
+            --tg-theme-hint-color: #999999;
+            --tg-theme-link-color: #2481cc;
+            --tg-theme-button-color: #40a7e3;
+            --tg-theme-button-text-color: #ffffff;
+            
+            --primary: #FFD700;
+            --primary-dark: #FFC800;
+            --secondary: #4CAF50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --info: #2196F3;
+            --dark: #333;
+            --light: #f5f5f5;
+            --success: #8bc34a;
+            --egg: #FFF3E0;
+            --hay: #FFE0B2;
+            --grass: #C8E6C9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            position: relative;
+        }
+
+        /* Профиль пользователя вверху */
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 20px 16px;
+            border-radius: 0 0 30px 30px;
+            color: var(--dark);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .profile-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .profile-username {
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .profile-id {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .profile-date {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .balance-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px dashed rgba(0,0,0,0.1);
+        }
+
+        .balance-item {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .balance-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .balance-value {
+            font-weight: 800;
+            font-size: 18px;
+            margin-top: 4px;
+        }
+
+        .balance-value small {
+            font-size: 12px;
+            font-weight: 400;
+            opacity: 0.7;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* Главное меню (12 кнопок) */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 0 12px;
+            margin-bottom: 15px;
+        }
+
+        .menu-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--light);
+            border: none;
+            border-radius: 16px;
+            padding: 12px 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--dark);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            text-decoration: none;
+            width: 100%;
+            aspect-ratio: 1/1;
+        }
+
+        .menu-button i {
+            font-size: 24px;
+            margin-bottom: 6px;
+            color: var(--primary-dark);
+        }
+
+        .menu-button.wide {
+            grid-column: span 4;
+            flex-direction: row;
+            gap: 8px;
+            aspect-ratio: auto;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .menu-button.wide i {
+            font-size: 20px;
+            margin-bottom: 0;
+        }
+
+        .menu-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Контейнер для контента */
+        .content {
+            padding: 0 16px;
+        }
+
+        .content-card {
+            background: var(--light);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        .content-title {
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-title i {
+            color: var(--primary-dark);
+        }
+
+        /* Кнопки */
+        .button {
+            background: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            border: none;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .button.secondary {
+            background: transparent;
+            border: 2px solid var(--tg-theme-button-color);
+            color: var(--tg-theme-button-color);
+        }
+
+        .button:active {
+            transform: scale(0.98);
+        }
+
+        /* Таблицы сумм */
+        .amount-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .amount-item {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .amount-item .rub {
+            font-size: 12px;
+            color: var(--tg-theme-hint-color);
+        }
+
+        /* Список куриц */
+        .chickens-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chicken-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .chicken-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--egg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .chicken-info {
+            flex: 1;
+        }
+
+        .chicken-name {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .chicken-desc {
+            font-size: 13px;
+            color: var(--tg-theme-hint-color);
+            margin-bottom: 8px;
+        }
+
+        .chicken-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+        .chicken-price {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .chicken-income {
+            color: var(--success);
+        }
+
+        .chicken-count {
+            background: var(--light);
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        /* Методы оплаты */
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 16px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .payment-method.active {
+            border-color: var(--primary);
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .payment-method i {
+            font-size: 24px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .payment-method span {
+            font-weight: 600;
+            flex: 1;
+        }
+
+        /* Бонусы */
+        .bonus-badge {
+            background: linear-gradient(135deg, var(--warning), #FF5722);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        /* Таймер */
+        .timer {
+            font-size: 24px;
+            font-weight: 800;
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            margin: 15px 0;
+        }
+
+        /* Топ рефералов */
+        .top-list {
+            margin: 20px 0;
+        }
+
+        .top-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .top-place {
+            font-weight: 800;
+            font-size: 18px;
+            width: 30px;
+            color: var(--primary-dark);
+        }
+
+        .top-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .top-value {
+            font-weight: 700;
+        }
+
+        /* Нижняя навигация */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 20px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            border-radius: 30px 30px 0 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--tg-theme-hint-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        /* Скрытие элементов */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Форма ввода */
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-radius: 16px;
+            font-size: 16px;
+            margin: 10px 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Кнопка назад */
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--tg-theme-hint-color);
+            cursor: pointer;
+            padding: 10px 0;
+            margin-bottom: 15px;
+        }
+
+        .back-button i {
+            font-size: 20px;
+        }
+
+        /* Сообщения */
+        .alert {
+            padding: 16px;
+            border-radius: 16px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <!-- ШАПКА С ПРОФИЛЕМ -->
+    <div class="profile-header" id="profileHeader">
+        <div class="profile-info">
+            <div class="profile-row">
+                <span class="profile-username" id="username">Загрузка...</span>
+                <span class="profile-id" id="userId"></span>
+            </div>
+            <div class="profile-date" id="regDate"></div>
+            
+            <div class="balance-container">
+                <div class="balance-item">
+                    <div class="balance-label">🥚 Яйца</div>
+                    <div class="balance-value" id="eggBalance">0</div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-label">🌾 Сено</div>
+                    <div class="balance-value" id="hayBalance">0</div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-label">🌿 Трава</div>
+                    <div class="balance-value" id="grassBalance">0</div>
+                </div>
+            </div>
+            
+            <div class="stats-row">
+                <span>👥 Рефералов: <strong id="referrals">0</strong> чел.</span>
+                <span>💰 Реф.прибыль: <strong id="refProfit">0</strong> травы</span>
+                <span>📊 Курс: <strong>100 яиц/травы = 1₽</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div id="mainContent">
+        <!-- Приветственное сообщение (только при старте) -->
+        <div id="welcomeMessage" class="content hidden">
+            <div class="content-card">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                    <i class="fas fa-dove" style="font-size: 40px; color: var(--primary);"></i>
+                    <div>
+                        <h2>Добро пожаловать в CoinFlow! 🐤</h2>
+                        <p style="margin-top: 10px;">Жми кнопку «Главное меню» и запускай свой заработок уже сейчас ✅</p>
+                    </div>
+                </div>
+                <a href="https://t.me/coinflow_channel" class="button" style="text-decoration: none;" target="_blank">
+                    <i class="fab fa-telegram"></i> 📚 Наш новостной канал - ПЕРЕЙТИ
+                </a>
+            </div>
+        </div>
+
+        <!-- ГЛАВНОЕ МЕНЮ (12 кнопок) -->
+        <div class="menu-grid" id="mainMenu">
+            <button class="menu-button" onclick="showSection('buy')">
+                <i class="fas fa-shopping-cart"></i>
+                Купить куриц
+            </button>
+            <button class="menu-button" onclick="showSection('sell')">
+                <i class="fas fa-coins"></i>
+                Продать сено
+            </button>
+            <button class="menu-button" onclick="showSection('deposit')">
+                <i class="fas fa-arrow-down"></i>
+                Пополнить
+            </button>
+            <button class="menu-button" onclick="showSection('withdraw')">
+                <i class="fas fa-arrow-up"></i>
+                Вывести
+            </button>
+            <button class="menu-button" onclick="showSection('referrals')">
+                <i class="fas fa-users"></i>
+                Реф. программа
+            </button>
+            <button class="menu-button" onclick="showSection('exchange')">
+                <i class="fas fa-exchange-alt"></i>
+                Обменять
+            </button>
+            <button class="menu-button" onclick="showSection('info')">
+                <i class="fas fa-info-circle"></i>
+                Инфо
+            </button>
+            <button class="menu-button" onclick="showSection('bonus')">
+                <i class="fas fa-gift"></i>
+                Бонусная программа
+            </button>
+            <button class="menu-button" onclick="showSection('promo')">
+                <i class="fas fa-ticket-alt"></i>
+                Промокоды
+            </button>
+            <button class="menu-button" onclick="showSection('support')">
+                <i class="fas fa-headset"></i>
+                Тех. поддержка
+            </button>
+            <button class="menu-button wide" onclick="showSection('contest')">
+                <i class="fas fa-trophy"></i>
+                КОНКУРС
+            </button>
+        </div>
+
+        <!-- КОНТЕЙНЕРЫ ДЛЯ РАЗДЕЛОВ -->
+        <div class="content" id="sections">
+            <!-- РАЗДЕЛ: КУПИТЬ КУРИЦ -->
+            <div id="buySection" class="hidden">
+                <button class="back-button" onclick="hideAllSections()">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+                <div class="content-card">
+                    <div class="content-title">
+                        <i class="fas fa-shopping-cart"></i> Купить куриц
+                    </div>
+                    
+                    <div class="chickens-list" id="chickensList">
+                        <!-- Список куриц будет загружен через JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- РАЗДЕЛ: ПРОДАТЬ СЕНО -->
+            <div id="sellSection" class="hidden">
+                <button class="back-button" onclick="hideAllSections()">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+                <div class="content-card">
+                    <div class="content-title">
+                        <i class="fas fa-coins"></i> Продать сено
+                    </div>
+                    
+                    <p>Здесь вы можете продать своё накопленное с куриц сено...</p>
+                    <p><strong>Курс продажи:</strong> 100 сена = 0.5 травы на вывод и 0.5 яиц на покупки!</p>
+                    
+                    <div style="background: white; border-radius: 16px; padding: 20px; text-align: center; margin: 20px 0;">
+                        <div style="font-size: 14px; color: var(--tg-theme-hint-color);">Вами собрано:</div>
+                        <div style="font-size: 32px; font-weight: 800;" id="hayAmount">3,916,335</div>
+                        <div style="font-size: 14px;">сена</div>
+                    </div>
+                    
+                    <button class="button" onclick="sellAllHay()">
+                        <i class="fas fa-exchange-alt"></i> Обменять всё
+                    </button>
+                </div>
+            </div>
+
+            <!-- РАЗДЕЛ: ПОПОЛНИТЬ -->
+            <div id="depositSection" class="hidden">
+                <button class="back-button" onclick="hideAllSections()">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+                <div class="content-card">
+                    <div class="content-title">
+                        <i class="fas fa-arrow-down"></i> Пополнить баланс
+                    </div>
+                    
+                    <div class="bonus-badge">
+                        🎁 +250% при любой покупке
+                    </div>
+                    <div class="bonus-badge" style="background: linear-gradient(135deg, var(--primary), #FFA000);">
+                        🔥 +400% при покупке от 500,000
+                    </div>
+                    
+                    <p style="margin-top: 20px; font-weight: 500;">Премиальные курицы за крупные пополнения:</p>
+                    <ul style="margin-left: 20px; margin-bottom: 20px;">
+                        <li>Капитан-клюв (от 100,000)</li>
+                        <li>Робоклюв (от 500,000)</li>
+                    </ul>
+                    
+                    <div class="amount-grid">
+                        <div class="amount-item">1,000 <span class="rub">(10.0P)</span></div>
+                        <div class="amount-item">5,000 <span class="rub">(50.0P)</span></div>
+                        <div class="amount-item">10,000 <span class="rub">(100.0P)</span></div>
+                        <div class="amount-item">50,000 <span class="rub">(500.0P)</span></div>
+                        <div class="amount-item">100,000 <span class="rub">(1000.0P)</span></div>
+                        <div class="amount-item">500,000 <span class="rub">(5000.0P)</span></div>
+                        <div class="amount-item">1,000,000 <span class="rub">(10000.0P)</span></div>
+                        <div class="amount-item">2,000,000 <span class="rub">(20000.0P)</span></div>
+                        <div class="amount-item">5,000,000 <span class="rub">(50000.0P)</span></div>
+                        <div class="amount-item">10,000,000 <span class="rub">(100000.0P)</span></div>
+                    </div>
+                    
+                    <p style="font-weight: 600; margin: 15px 0 10px;">Выберите метод оплаты:</p>
+                    
+                    <div class="payment-methods" id="paymentMethods">
+                        <div class="payment-method" onclick="selectPaymentMethod('card')">
+                            <i class="fas fa-credit-card"></i>
+                            <span>МИР/СБП/ЮMoney</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                        <div class="payment-method" onclick="selectPaymentMethod('crypto')">
+                            <i class="fab fa-bitcoin"></i>
+                            <span>CryptoBot</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                        <div class="payment-method" onclick="selectPaymentMethod('fk')">
+                            <i class="fas fa-wallet"></i>
+                            <span>FK Wallet</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div id="paymentDetails" class="hidden">
+                        <div style="background: white; border-radius: 16px; padding: 20px; margin: 20px 0;">
+                            <p style="font-weight: 600;">Реквизиты для оплаты:</p>
+                            <p id="paymentRequisites">Загрузка...</p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button class="button" onclick="payOrder()">
+                                <i class="fas fa-credit-card"></i> Оплатить
+                            </button>
+                            <button class="button secondary" onclick="checkPayment()">
+                                <i class="fas fa-check-circle"></i> Проверить оплату
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- РАЗДЕЛ: ВЫВЕСТИ -->
+            <div id="withdrawSection" class="hidden">
+                <button class="back-button" onclick="hideAllSections()">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+                <div class="content-card">
+                    <div class="content-title">
+                        <i class="fas fa-arrow-up"></i> Вывести средства
+                    </div>
+                    
+                    <p><strong>Курс:</strong> 100 травы = 1 руб.</p>
+                    <p><strong>Минимальная сумма:</strong> 25,000 травы (≈ 250.00 ₽)</p>
+                    
+                    <div style="margin: 20px 0;">
+                        <label>Выберите метод вывода:</label>
+                        <select class="input-field" id="withdrawMethod">
+                            <option value="card">МИР/СБП/ЮMoney</option>
+                            <option value="ton">TON</option>
+                            <option value="trx">TRX</option>
+                            <option value="ltc">LTC</option>
+                            <option value="usdt">USDT (TRC-20/BEP-20/TON)</option>
+                            <option value="fk">FK Wallet</option>
+                        </select>
+                        
+                        <input type="number" class="input-field" id="withdrawAmount" placeholder="Сумма в траве (мин. 25000)" min="25000">
+                        <input type="text" class="input-field" id="withdrawDetails" placeholder="Реквизиты для вывода">
+                        
+                        <button class="button" onclick="requestWithdraw()" style="margin-top: 15px;">
+                            <i class="fas fa-paper-plane"></i> Отправить заявку
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <p style="font-weight: 600;">Последние 5 выплат:</p>
+                        <div id="withdrawHistory"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showSection('home')">
+            <i class="fas fa-home"></i>
+            <span>Главная</span>
+        </div>
+        <div class="nav-item" onclick="showSection('buy')">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Магазин</span>
+        </div>
+        <div class="nav-item" onclick="showSection('deposit')">
+            <i class="fas fa-arrow-down"></i>
+            <span>Пополнить</span>
+        </div>
+        <div class="nav-item" onclick="showSection('referrals')">
+            <i class="fas fa-users"></i>
+            <span>Рефералы</span>
+        </div>
+    </div>
+
+    <script>
+        // --- ЧАСТЬ 1 ЗАВЕРШЕНА ---
+        // Продолжение следует в Части 2...
+    </script>
+
+<!-- index.html - Часть 3: Бонусы, промокоды, конкурс и поддержка -->
+
+    <script>
+        // --- ЧАСТЬ 3: Дополнительные функции ---
+        
+        // Данные для бонусов
+        let lastBonusTime = localStorage.getItem('lastBonusTime');
+        let bonusTimer = null;
+        
+        // Бонусная программа
+        function showBonus() {
+            const section = document.createElement('div');
+            section.className = 'content-card';
+            
+            const now = new Date().getTime();
+            let timeLeft = '';
+            let bonusAvailable = true;
+            
+            if (lastBonusTime) {
+                const lastTime = parseInt(lastBonusTime);
+                const diff = now - lastTime;
+                const hoursLeft = Math.floor((24 * 60 * 60 * 1000 - diff) / (60 * 60 * 1000));
+                const minutesLeft = Math.floor(((24 * 60 * 60 * 1000 - diff) % (60 * 60 * 1000)) / (60 * 1000));
+                
+                if (diff < 24 * 60 * 60 * 1000) {
+                    timeLeft = `${hoursLeft} ч ${minutesLeft} мин`;
+                    bonusAvailable = false;
+                }
+            }
+            
+            section.innerHTML = `
+                <div class="content-title">
+                    <i class="fas fa-gift"></i> Бонусная программа
+                </div>
+                
+                <div style="text-align: center; padding: 30px; background: white; border-radius: 20px; margin: 20px 0;">
+                    <i class="fas fa-gift" style="font-size: 60px; color: var(--primary);"></i>
+                    <p style="margin: 15px 0; font-size: 18px;">Каждый день можно получить от 100 до 500 яиц!</p>
+                    
+                    ${bonusAvailable ? 
+                        '<button class="button" onclick="claimBonus()"><i class="fas fa-gift"></i> Забрать бонус</button>' : 
+                        `<div class="alert warning">⏰ Вы уже получили бонус сегодня. Следующий бонус через: ${timeLeft}</div>`
+                    }
+                </div>
+                
+                <button class="back-button" onclick="hideAllSections()">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+            `;
+            
+            document.getElementById('sections').innerHTML = '';
+            document.getElementById('sections').appendChild(section);
+            section.classList.remove('hidden');
+        }
+        
+        // Забрать бонус
+        function claimBonus() {
+            const now = new Date().getTime();
+            
+            if (lastBonusTime) {
+                const lastTime = parseInt(lastBonusTime);
+                if (now - lastTime < 24 * 60 * 60 * 1000) {
+                    tg.showAlert('❌ Бонус уже получен сегодня!');
+                    showBonus();
+                    return;
+                }
+            }
+            
+            const bonusAmount = Math.floor(Math.random() * 400) + 100; // 100-500
+            userData.eggs += bonusAmount;
+            lastBonusTime = now.toString();
+            localStorage.setItem('lastBonusTime', lastBonusTime);
+            
+            updateProfile();
+            tg.showAlert(`✅ Вы получили ${bonusAmount} яиц!`);
+            showBonus();
+        }
+        
+        // Промокоды
+        function showPromo() {
+            const section = document.createElement('div');
+            section.className = 'content-card';
+            
+            section.innerHTML = `
+                <div class="content-title">
+                    <i class="fas fa-ticket-alt"></i> Промокоды
+                </div>
+                
+                <div style="background: white; border-radius: 16px; padding: 20px; margin: 20px 0;">
+                    <p>Здесь вы можете получать денежные промокоды - каждый день от 1₽ до 50₽</p>
+                    
+                    <div style="margin: 25px 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee;">
+                            <div>
+                                <span style="font-weight: 600;">Подписка 1 месяц</span>
+                                <span style="color: var(--tg-theme-hint-color);">30 дней</span>
+                            </div>
+                            <span style="font-weight: 700; color: var(--primary-dark);">349₽</span>
+                            <button class="button" style="width: auto;" onclick="buySubscription(30, 349)">Купить</button>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee;">
+                            <div>
+                                <span style="font-weight: 600;">Подписка 2 месяца</span>
+                                <span style="color: var(--tg-theme-hint-color);">60 дней</span>
+                            </div>
+                            <span style="font-weight: 700; color: var(--primary-dark);">599₽</span>
+                            <button class="button" style="width: auto;" onclick="buySubscription(60, 599)">Купить</button>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
+                            <div>
+                                <span style="font-weight: 600;">Подписка навсегда</span>
+                                <span style="color: var(--tg-theme-hint-color);">∞ дней</span>
+                            </div>
+                            <span style="font-weight: 700; color: var(--primary-dark);">2499₽</span>
+                            <button class="button" style="width: auto;" onclick="buySubscription(9999, 2499)">Купить</button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <p style="font-weight: 600;">Ввести промокод:</p>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" class="input-field" id="promoCode" placeholder="XXXX-XXXX-XXXX" style="flex: 1;">
+                            <button class="button" style="width: auto;" onclick="activatePromo()">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="back-button" onclick="hideAllSections()">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+            `;
+            
+            document.getElementById('sections').innerHTML = '';
+            document.getElementById('sections').appendChild(section);
+            section.classList.remove('hidden');
+        }
+        
+        // Купить подписку
+        function buySubscription(days, price) {
+            tg.showAlert(`✅ Заявка на подписку (${days} дней) создана! Сумма: ${price}₽. Ожидайте подтверждения.`);
+        }
+        
+        // Активировать промокод
+        function activatePromo() {
+            const code = document.getElementById('promoCode').value;
+            if (!code || !code.match(/^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) {
+                tg.showAlert('❌ Неверный формат промокода. Используйте XXXX-XXXX-XXXX');
+                return;
+            }
+            
+            tg.showAlert('⏳ Промокод отправлен на проверку!');
+        }
+        
+        // Конкурс
+        function showContest() {
+            const section = document.createElement('div');
+            section.className = 'content-card';
+            
+            // Таймер до 26.12 19:00 МСК
+            const contestDate = new Date('2026-12-26T19:00:00+03:00').getTime();
+            const now = new Date().getTime();
+            const diff = contestDate - now;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            section.innerHTML = `
+                <div class="content-title">
+                    <i class="fas fa-trophy"></i> КОНКУРС
+                </div>
+                
+                <div class="timer">
+                    ⏰ ${days}д ${hours}ч ${minutes}м
+                    <div style="font-size: 14px; margin-top: 5px;">до 26.12 19:00 МСК</div>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #FFD700, #FFA500); border-radius: 20px; padding: 20px; color: #000; margin: 20px 0;">
+                    <p style="font-weight: 800; font-size: 24px;">🏆 ПРИЗЫ:</p>
+                    <p style="font-size: 18px;">1 место – 2,000,000 травы (20,000P)</p>
+                    <p style="font-size: 16px;">2 место – 1,000,000 травы (10,000P)</p>
+                    <p style="font-size: 16px;">3 место – 500,000 травы (5,000P)</p>
+                </div>
+                
+                <div class="top-list">
+                    <p style="font-weight: 600;">🏆 Топ участников:</p>
+                    <div class="top-item">
+                        <span class="top-place">1</span>
+                        <span class="top-name">@crypto_whale</span>
+                        <span class="top-value">1,234,567 травы</span>
+                    </div>
+                    <div class="top-item">
+                        <span class="top-place">2</span>
+                        <span class="top-name">@chicken_farmer</span>
+                        <span class="top-value">987,654 травы</span>
+                    </div>
+                    <div class="top-item">
+                        <span class="top-place">3</span>
+                        <span class="top-name">@egg_master</span>
+                        <span class="top-value">876,543 травы</span>
+                    </div>
+                    <div class="top-item">
+                        <span class="top-place">4</span>
+                        <span class="top-name">@hay_kings</span>
+                        <span class="top-value">765,432 травы</span>
+                    </div>
+                    <div class="top-item">
+                        <span class="top-place">5</span>
+                        <span class="top-name">@grass_whisper</span>
+                        <span class="top-value">654,321 травы</span>
+                    </div>
+                </div>
+                
+                <div style="background: var(--light); border-radius: 16px; padding: 15px; margin-top: 20px;">
+                    <p><strong>Ваш результат:</strong> ${formatNumber(userData.grass)} травы</p>
+                </div>
+                
+                <button class="back-button" onclick="hideAllSections()">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+            `;
+            
+            document.getElementById('sections').innerHTML = '';
+            document.getElementById('sections').appendChild(section);
+            section.classList.remove('hidden');
+        }
+        
+        // Информация
+        function showInfo() {
+            const section = document.createElement('div');
+            section.className = 'content-card';
+            
+            section.innerHTML = `
+                <div class="content-title">
+                    <i class="fas fa-info-circle"></i> О проекте
+                </div>
+                
+                <div style="background: white; border-radius: 16px; padding: 20px;">
+                    <p style="font-weight: 700; font-size: 20px;">🐤 CoinFlow</p>
+                    <p style="margin: 15px 0;">Зарабатывай на виртуальных курицах!</p>
+                    
+                    <p><b>Как это работает:</b></p>
+                    <ul style="margin-left: 20px; margin-bottom: 15px;">
+                        <li>🥚 Покупай куриц за яйца</li>
+                        <li>🌾 Курицы приносят сено каждый час</li>
+                        <li>💰 Продавай сено за траву и яйца</li>
+                        <li>💸 Выводи траву по курсу 100 = 1₽</li>
+                    </ul>
+                    
+                    <p><b>Контакты:</b></p>
+                    <p>📢 Канал: @coinflow_channel</p>
+                    <p>💬 Чат: @coinflow_chat</p>
+                    <p>👨‍💻 Поддержка: @coinflow_support</p>
+                </div>
+                
+                <button class="back-button" onclick="hideAllSections()">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+            `;
+            
+            document.getElementById('sections').innerHTML = '';
+            document.getElementById('sections').appendChild(section);
+            section.classList.remove('hidden');
+        }
+        
+        // Техническая поддержка
+        function showSupport() {
+            const section = document.createElement('div');
+            section.className = 'content-card';
+            
+            section.innerHTML = `
+                <div class="content-title">
+                    <i class="fas fa-headset"></i> Техническая поддержка
+                </div>
+                
+                <div style="background: white; border-radius: 16px; padding: 20px;">
+                    <p>Опишите вашу проблему или вопрос:</p>
+                    
+                    <textarea class="input-field" id="supportMessage" rows="5" placeholder="Введите сообщение..."></textarea>
+                    
+                    <button class="button" onclick="sendSupportMessage()">
+                        <i class="fas fa-paper-plane"></i> Отправить
+                    </button>
+                    
+                    <div style="margin-top: 30px;" id="supportHistory">
+                        <p style="font-weight: 600;">Последние обращения:</p>
+                        <div class="alert success">
+                            <b>Ответ от поддержки (12.03.2026):</b><br>
+                            Здравствуйте! Ваш вопрос решен. Баланс пополнен.
+                        </div>
+                        <div class="alert info" style="background: #e3f2fd;">
+                            <b>Вы (10.03.2026):</b><br>
+                            Не пришли яйца за пополнение
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="back-button" onclick="hideAllSections()">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+            `;
+            
+            document.getElementById('sections').innerHTML = '';
+            document.getElementById('sections').appendChild(section);
+            section.classList.remove('hidden');
+        }
+        
+        // Отправить сообщение в поддержку
+        function sendSupportMessage() {
+            const message = document.getElementById('supportMessage').value;
+            if (!message.trim()) {
+                tg.showAlert('❌ Введите сообщение');
+                return;
+            }
+            
+            tg.showAlert('✅ Сообщение отправлено в поддержку! Ожидайте ответа.');
+            document.getElementById('supportMessage').value = '';
+        }
+        
+        // Обмен валют
+        function showExchange() {
+            const section = document.createElement('div');
+            section.className = 'content-card';
+            
+            section.innerHTML = `
+                <div class="content-title">
+                    <i class="fas fa-exchange-alt"></i> Обмен валюты
+                </div>
+                
+                <div style="background: white; border-radius: 16px; padding: 20px;">
+                    <p>Вы можете обменять ${formatNumber(userData.grass)} травы на яйца и получить бонус +350% на баланс!</p>
+                    
+                    <div style="margin: 20px 0;">
+                        <label>Сумма для обмена (травы):</label>
+                        <input type="number" class="input-field" id="exchangeAmount" min="1" max="${userData.grass}" value="${Math.min(100, userData.grass)}">
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="button" onclick="exchangeGrassToEggs()">
+                            <i class="fas fa-exchange-alt"></i> Траву → Яйца
+                        </button>
+                        <button class="button secondary" onclick="exchangeEggsToGrass()">
+                            <i class="fas fa-exchange-alt"></i> Яйца → Траву
+                        </button>
+                    </div>
+                </div>
+                
+                <button class="back-button" onclick="hideAllSections()">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+            `;
+            
+            document.getElementById('sections').innerHTML = '';
+            document.getElementById('sections').appendChild(section);
+            section.classList.remove('hidden');
+        }
+        
+        // Обмен травы на яйца
+        function exchangeGrassToEggs() {
+            const amount = parseInt(document.getElementById('exchangeAmount').value);
+            
+            if (amount > userData.grass) {
+                tg.showAlert('❌ Недостаточно травы');
+                return;
+            }
+            
+            if (amount < 1) {
+                tg.showAlert('❌ Введите корректную сумму');
+                return;
+            }
+            
+            // Курс: 1 трава = 100 яиц + бонус 350%
+            const eggsEarned = amount * 100 * 4.5; // 100 яиц за траву + 350% бонус = 450%
+            
+            userData.grass -= amount;
+            userData.eggs += eggsEarned;
+            
+            updateProfile();
+            tg.showAlert(`✅ Обмен成功! Получено ${formatNumber(eggsEarned)} яиц`);
+            showExchange();
+        }
+        
+        // Обмен яиц на траву
+        function exchangeEggsToGrass() {
+            const amount = parseInt(document.getElementById('exchangeAmount').value);
+            const eggsNeeded = amount * 100;
+            
+            if (eggsNeeded > userData.eggs) {
+                tg.showAlert('❌ Недостаточно яиц');
+                return;
+            }
+            
+            userData.eggs -= eggsNeeded;
+            userData.grass += amount;
+            
+            updateProfile();
+            tg.showAlert(`✅ Обмен成功! Получено ${formatNumber(amount)} травы`);
+            showExchange();
+        }
+        
+        // Переопределяем showSection для новых разделов
+        const originalShowSection = showSection;
+        showSection = function(section) {
+            if (section === 'bonus') {
+                hideAllSections();
+                showBonus();
+            } else if (section === 'promo') {
+                hideAllSections();
+                showPromo();
+            } else if (section === 'contest') {
+                hideAllSections();
+                showContest();
+            } else if (section === 'info') {
+                hideAllSections();
+                showInfo();
+            } else if (section === 'support') {
+                hideAllSections();
+                showSupport();
+            } else if (section === 'exchange') {
+                hideAllSections();
+                showExchange();
+            } else {
+                originalShowSection(section);
+            }
+        };
+        
+        // Инициализация с новыми функциями
+        const originalInit = init;
+        init = function() {
+            originalInit();
+            
+            // Добавляем обработчики для новых кнопок
+            const menuButtons = document.querySelectorAll('.menu-button');
+            menuButtons.forEach(button => {
+                const text = button.textContent.trim();
+                if (text.includes('Бонусная')) {
+                    button.onclick = () => showSection('bonus');
+                } else if (text.includes('Промокоды')) {
+                    button.onclick = () => showSection('promo');
+                } else if (text.includes('КОНКУРС')) {
+                    button.onclick = () => showSection('contest');
+                } else if (text.includes('Инфо')) {
+                    button.onclick = () => showSection('info');
+                } else if (text.includes('Тех. поддержка')) {
+                    button.onclick = () => showSection('support');
+                } else if (text.includes('Обменять')) {
+                    button.onclick = () => showSection('exchange');
+                }
+            });
+        };
+        
+        // Перезапускаем инициализацию
+        window.onload = init;
+        
+        // Фоновая задача для генерации сена (каждую минуту)
+        setInterval(() => {
+            // Расчет сена от куриц
+            let totalIncome = 0;
+            for (const [chickenId, count] of Object.entries(userData.chickens)) {
+                const chicken = chickensData.find(c => c.id === chickenId);
+                if (chicken) {
+                    totalIncome += chicken.income * count;
+                }
+            }
+            
+            // Добавляем сено (в час, поэтому делим на 60 для минуты)
+            const hayPerMinute = Math.floor(totalIncome / 60);
+            if (hayPerMinute > 0) {
+                userData.hay += hayPerMinute;
+                updateProfile();
+            }
+        }, 60000); // Каждую минуту
+        
+        console.log('CoinFlow Mini App успешно загружен!');
+        
+        // --- ЧАСТЬ 3 ЗАВЕРШЕНА ---
+        // === КОД ЗАВЕРШЕН ===
+    </script>
+
+  <!-- index.html - Часть 4: Админ-панель -->
+
+<script>
+    // --- ЧАСТЬ 4: АДМИН-ПАНЕЛЬ ---
+
+    // Проверка на администратора (ID администраторов)
+    const ADMIN_IDS = [123456789, 987654321]; // Замените на реальные ID админов
+    let isAdmin = ADMIN_IDS.includes(userData.id);
+
+    // Добавляем кнопку админ-панели если пользователь админ
+    function addAdminButton() {
+        if (isAdmin) {
+            const menuGrid = document.querySelector('.menu-grid');
+            const adminButton = document.createElement('button');
+            adminButton.className = 'menu-button';
+            adminButton.innerHTML = '<i class="fas fa-crown"></i> Админ панель';
+            adminButton.onclick = () => showAdminPanel();
+            menuGrid.appendChild(adminButton);
+        }
+    }
+
+    // Показать админ-панель
+    function showAdminPanel() {
+        if (!isAdmin) {
+            tg.showAlert('❌ Доступ запрещен');
+            return;
+        }
+
+        const section = document.createElement('div');
+        section.className = 'content-card';
+        
+        section.innerHTML = `
+            <div class="content-title">
+                <i class="fas fa-crown" style="color: gold;"></i> Админ-панель
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0;">
+                <button class="button" onclick="showUserManagement()">
+                    <i class="fas fa-users"></i> Управление пользователями
+                </button>
+                <button class="button" onclick="showPaymentManagement()">
+                    <i class="fas fa-credit-card"></i> Пополнения
+                </button>
+                <button class="button" onclick="showWithdrawManagement()">
+                    <i class="fas fa-money-bill"></i> Выплаты
+                </button>
+                <button class="button" onclick="showChickenManagement()">
+                    <i class="fas fa-drumstick-bite"></i> Управление курицами
+                </button>
+                <button class="button" onclick="showPromoManagement()">
+                    <i class="fas fa-ticket-alt"></i> Промокоды
+                </button>
+                <button class="button" onclick="showMailing()">
+                    <i class="fas fa-bullhorn"></i> Рассылка
+                </button>
+                <button class="button" onclick="showStats()">
+                    <i class="fas fa-chart-bar"></i> Статистика
+                </button>
+                <button class="button" onclick="showSettings()">
+                    <i class="fas fa-cog"></i> Настройки
+                </button>
+            </div>
+            
+            <div id="adminContent"></div>
+            
+            <button class="back-button" onclick="hideAllSections()">
+                <i class="fas fa-arrow-left"></i> Назад
+            </button>
+        `;
+        
+        document.getElementById('sections').innerHTML = '';
+        document.getElementById('sections').appendChild(section);
+        section.classList.remove('hidden');
+    }
+
+    // Управление пользователями
+    function showUserManagement() {
+        const adminContent = document.getElementById('adminContent');
+        
+        adminContent.innerHTML = `
+            <div style="background: white; border-radius: 16px; padding: 20px;">
+                <h3 style="margin-bottom: 15px;">🔍 Поиск пользователя</h3>
+                
+                <input type="text" class="input-field" id="searchUser" placeholder="ID или @username" onkeyup="searchUser()">
+                
+                <div id="userSearchResults" style="margin: 20px 0; max-height: 300px; overflow-y: auto;"></div>
+                
+                <div id="userEditForm" class="hidden">
+                    <h4 style="margin: 20px 0 10px;">Редактирование пользователя</h4>
+                    
+                    <label>Баланс яиц:</label>
+                    <input type="number" class="input-field" id="editEggs" value="0">
+                    
+                    <label>Баланс сена:</label>
+                    <input type="number" class="input-field" id="editHay" value="0">
+                    
+                    <label>Баланс травы:</label>
+                    <input type="number" class="input-field" id="editGrass" value="0">
+                    
+                    <label>Количество рефералов:</label>
+                    <input type="number" class="input-field" id="editReferrals" value="0">
+                    
+                    <div style="margin: 15px 0;">
+                        <label>
+                            <input type="checkbox" id="editBlocked"> Заблокирован
+                        </label>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="button" onclick="saveUserChanges()">
+                            <i class="fas fa-save"></i> Сохранить
+                        </button>
+                        <button class="button secondary" onclick="cancelUserEdit()">
+                            Отмена
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Поиск пользователя
+    function searchUser() {
+        const query = document.getElementById('searchUser').value.toLowerCase();
+        const resultsDiv = document.getElementById('userSearchResults');
+        
+        if (query.length < 2) {
+            resultsDiv.innerHTML = '';
+            return;
+        }
+
+        // Здесь должен быть запрос к серверу
+        // Для демонстрации показываем тестовые данные
+        const mockUsers = [
+            { id: 123456789, username: 'john_doe', eggs: 23433, hay: 3916335, grass: 36, referrals: 49, blocked: false },
+            { id: 987654321, username: 'jane_smith', eggs: 15000, hay: 500000, grass: 100, referrals: 23, blocked: false },
+            { id: 555555555, username: 'crypto_farmer', eggs: 50000, hay: 1000000, grass: 500, referrals: 150, blocked: true }
+        ];
+
+        const filtered = mockUsers.filter(u => 
+            u.id.toString().includes(query) || 
+            u.username.toLowerCase().includes(query.replace('@', ''))
+        );
+
+        resultsDiv.innerHTML = filtered.map(user => `
+            <div style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer;" onclick="editUser(${user.id})">
+                <b>@${user.username}</b> (ID: ${user.id})<br>
+                🥚 ${formatNumber(user.eggs)} | 🌾 ${formatNumber(user.hay)} | 🌿 ${formatNumber(user.grass)}<br>
+                👥 ${user.referrals} реф. ${user.blocked ? '🔴 Заблокирован' : '🟢 Активен'}
+            </div>
+        `).join('') || '<div>Пользователи не найдены</div>';
+    }
+
+    // Редактирование пользователя
+    let currentEditUserId = null;
+
+    function editUser(userId) {
+        currentEditUserId = userId;
+        
+        // Здесь запрос к серверу
+        const mockUser = {
+            id: userId,
+            eggs: 23433,
+            hay: 3916335,
+            grass: 36,
+            referrals: 49,
+            blocked: false
+        };
+
+        document.getElementById('editEggs').value = mockUser.eggs;
+        document.getElementById('editHay').value = mockUser.hay;
+        document.getElementById('editGrass').value = mockUser.grass;
+        document.getElementById('editReferrals').value = mockUser.referrals;
+        document.getElementById('editBlocked').checked = mockUser.blocked;
+        
+        document.getElementById('userEditForm').classList.remove('hidden');
+    }
+
+    // Сохранить изменения пользователя
+    function saveUserChanges() {
+        const eggs = parseInt(document.getElementById('editEggs').value);
+        const hay = parseInt(document.getElementById('editHay').value);
+        const grass = parseInt(document.getElementById('editGrass').value);
+        const referrals = parseInt(document.getElementById('editReferrals').value);
+        const blocked = document.getElementById('editBlocked').checked;
+
+        // Здесь запрос к серверу
+        tg.showAlert(`✅ Изменения для пользователя ${currentEditUserId} сохранены`);
+        
+        cancelUserEdit();
+        searchUser(); // Обновляем поиск
+    }
+
+    function cancelUserEdit() {
+        currentEditUserId = null;
+        document.getElementById('userEditForm').classList.add('hidden');
+    }
+
+    // Управление пополнениями
+    function showPaymentManagement() {
+        const adminContent = document.getElementById('adminContent');
+        
+        // Моковые заявки на пополнение
+        const payments = [
+            { id: 1, userId: 123456789, username: 'john_doe', amount: 5000, method: 'card', status: 'pending', date: '16.03.2026 15:30' },
+            { id: 2, userId: 987654321, username: 'jane_smith', amount: 10000, method: 'crypto', status: 'pending', date: '16.03.2026 14:20' },
+            { id: 3, userId: 555555555, username: 'crypto_farmer', amount: 50000, method: 'fk', status: 'approved', date: '15.03.2026 10:15' }
+        ];
+
+        adminContent.innerHTML = `
+            <div style="background: white; border-radius: 16px; padding: 20px;">
+                <h3 style="margin-bottom: 15px;">💰 Заявки на пополнение</h3>
+                
+                <div style="margin-bottom: 15px;">
+                    <select class="input-field" id="paymentFilter" onchange="filterPayments()">
+                        <option value="all">Все заявки</option>
+                        <option value="pending">Ожидают</option>
+                        <option value="approved">Подтверждены</option>
+                        <option value="rejected">Отклонены</option>
+                    </select>
+                </div>
+                
+                <div id="paymentsList">
+                    ${payments.map(p => `
+                        <div style="padding: 15px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <b>@${p.username}</b> (ID: ${p.userId})<br>
+                                    Сумма: ${formatNumber(p.amount)} ₽<br>
+                                    Метод: ${getPaymentMethodName(p.method)}<br>
+                                    Дата: ${p.date}
+                                </div>
+                                <div style="text-align: right;">
+                                    <span class="${getStatusClass(p.status)}">${getStatusText(p.status)}</span>
+                                </div>
+                            </div>
+                            ${p.status === 'pending' ? `
+                                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                    <button class="button" style="background: #4CAF50;" onclick="approvePayment(${p.id})">
+                                        ✅ Подтвердить
+                                    </button>
+                                    <button class="button" style="background: #f44336;" onclick="rejectPayment(${p.id})">
+                                        ❌ Отклонить
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function getPaymentMethodName(method) {
+        const methods = {
+            'card': 'МИР/СБП/ЮMoney',
+            'crypto': 'CryptoBot',
+            'fk': 'FK Wallet'
+        };
+        return methods[method] || method;
+    }
+
+    function getStatusClass(status) {
+        const classes = {
+            'pending': 'warning',
+            'approved': 'success',
+            'rejected': 'error'
+        };
+        return classes[status] || '';
+    }
+
+    function getStatusText(status) {
+        const texts = {
+            'pending': '⏳ Ожидает',
+            'approved': '✅ Подтвержден',
+            'rejected': '❌ Отклонен'
+        };
+        return texts[status] || status;
+    }
+
+    // Подтвердить пополнение
+    function approvePayment(paymentId) {
+        // Здесь запрос к серверу
+        tg.showAlert(`✅ Пополнение #${paymentId} подтверждено. Средства начислены пользователю.`);
+        showPaymentManagement(); // Обновляем список
+    }
+
+    // Отклонить пополнение
+    function rejectPayment(paymentId) {
+        // Здесь запрос к серверу
+        tg.showAlert(`❌ Пополнение #${paymentId} отклонено.`);
+        showPaymentManagement(); // Обновляем список
+    }
+
+    // Управление выплатами
+    function showWithdrawManagement() {
+        const adminContent = document.getElementById('adminContent');
+        
+        // Моковые заявки на выплату
+        const withdraws = [
+            { id: 1, userId: 123456789, username: 'john_doe', amount: 25000, method: 'card', details: '2200 1234 5678 9012', status: 'pending', date: '16.03.2026 16:45' },
+            { id: 2, userId: 987654321, username: 'jane_smith', amount: 50000, method: 'ton', details: 'EQD...', status: 'pending', date: '16.03.2026 15:30' },
+            { id: 3, userId: 555555555, username: 'crypto_farmer', amount: 100000, method: 'usdt', details: 'TJk1...', status: 'completed', date: '15.03.2026 09:20' }
+        ];
+
+        adminContent.innerHTML = `
+            <div style="background: white; border-radius: 16px; padding: 20px;">
+                <h3 style="margin-bottom: 15px;">💸 Заявки на выплату</h3>
+                
+                <div style="margin-bottom: 15px;">
+                    <select class="input-field" id="withdrawFilter" onchange="filterWithdraws()">
+                        <option value="all">Все заявки</option>
+                        <option value="pending">Ожидают</option>
+                        <option value="completed">Выполнены</option>
+                        <option value="rejected">Отклонены</option>
+                    </select>
+                </div>
+                
+                <div id="withdrawsList">
+                    ${withdraws.map(w => `
+                        <div style="padding: 15px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <b>@${w.username}</b> (ID: ${w.userId})<br>
+                                    Сумма: ${formatNumber(w.amount)} травы (${formatNumber(w.amount/100)} ₽)<br>
+                                    Метод: ${getWithdrawMethodName(w.method)}<br>
+                                    Реквизиты: ${w.details}<br>
+                                    Дата: ${w.date}
+                                </div>
+                                <div style="text-align: right;">
+                                    <span class="${getWithdrawStatusClass(w.status)}">${getWithdrawStatusText(w.status)}</span>
+                                </div>
+                            </div>
+                            ${w.status === 'pending' ? `
+                                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                    <button class="button" style="background: #4CAF50;" onclick="approveWithdraw(${w.id})">
+                                        ✅ Подтвердить
+                                    </button>
+                                    <button class="button" style="background: #f44336;" onclick="rejectWithdraw(${w.id})">
+                                        ❌ Отклонить
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function getWithdrawMethodName(method) {
+        const methods = {
+            'card': 'МИР/СБП/ЮMoney',
+            'ton': 'TON',
+            'trx': 'TRX',
+            'ltc': 'LTC',
+            'usdt': 'USDT',
+            'fk': 'FK Wallet'
+        };
+        return methods[method] || method;
+    }
+
+    function getWithdrawStatusClass(status) {
+        const classes = {
+            'pending': 'warning',
+            'completed': 'success',
+            'rejected': 'error'
+        };
+        return classes[status] || '';
+    }
+
+    function getWithdrawStatusText(status) {
+        const texts = {
+            'pending': '⏳ Ожидает',
+            'completed': '✅ Выполнена',
+            'rejected': '❌ Отклонена'
+        };
+        return texts[status] || status;
+    }
+
+    // Подтвердить выплату
+    function approveWithdraw(withdrawId) {
+        // Здесь запрос к серверу
+        tg.showAlert(`✅ Выплата #${withdrawId} подтверждена. Средства отправлены пользователю.`);
+        showWithdrawManagement(); // Обновляем список
+    }
+
+    // Отклонить выплату
+    function rejectWithdraw(withdrawId) {
+        // Здесь запрос к серверу
+        tg.showAlert(`❌ Выплата #${withdrawId} отклонена. Баланс возвращен пользователю.`);
+        showWithdrawManagement(); // Обновляем список
+    }
+
+    // Управление курицами
+    function showChickenManagement() {
+        const adminContent = document.getElementById('adminContent');
+        
+        adminContent.innerHTML = `
+            <div style="background: white; border-radius: 16px; padding: 20px;">
+                <h3 style="margin-bottom: 15px;">🐔 Управление курицами</h3>
+                
+                <div style="margin-bottom: 20px;">
+                    <button class="button" onclick="showAddChickenForm()">
+                        <i class="fas fa-plus"></i> Добавить новую курицу
+                    </button>
+                </div>
+                
+                <div id="chickensList">
+                    ${chickensData.map((chicken, index) => `
+                        <div style="padding: 15px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 10px;">
+                            <div style="display: flex; gap: 15px;">
+                                <div style="font-size: 40px;">${chicken.emoji}</div>
+                                <div style="flex: 1;">
+                                    <h4>${chicken.name}</h4>
+                                    <p>${chicken.description}</p>
+                                    <div style="display: flex; gap: 15px; margin-top: 10px;">
+                                        <span>💰 Цена: <input type="number" value="${chicken.price}" id="price_${index}" style="width: 100px;"></span>
+                                        <span>📈 Доход: <input type="number" value="${chicken.income}" id="income_${index}" style="width: 100px;"></span>
+                                    </div>
+                                    <div style="margin-top: 10px;">
+                                        <button class="button" style="width: auto;" onclick="updateChicken(${index})">
+                                            Сохранить
+                                        </button>
+                                        <button class="button secondary" style="width: auto;" onclick="uploadChickenPhoto(${index})">
+                                            Загрузить фото
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <!-- Форма добавления новой курицы (скрыта) -->
+                <div id="addChickenForm" class="hidden" style="margin-top: 20px;">
+                    <h4>➕ Новая курица</h4>
+                    
+                    <input type="text" class="input-field" id="newChickenName" placeholder="Название">
+                    <input type="text" class="input-field" id="newChickenDesc" placeholder="Описание">
+                    <input type="number" class="input-field" id="newChickenPrice" placeholder="Цена в яйцах">
+                    <input type="number" class="input-field" id="newChickenIncome" placeholder="Доход сена/час">
+                    <input type="text" class="input-field" id="newChickenEmoji" placeholder="Эмодзи (например 🐔)">
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="button" onclick="addNewChicken()">Добавить</button>
+                        <button class="button secondary" onclick="hideAddChickenForm()">Отмена</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function showAddChickenForm() {
+        document.getElementById('addChickenForm').classList.remove('hidden');
+    }
+
+    function hideAddChickenForm() {
+        document.getElementById('addChickenForm').classList.add('hidden');
+    }
+
+    function addNewChicken() {
+        const name = document.getElementById('newChickenName').value;
+        const desc = document.getElementById('newChickenDesc').value;
+        const price = parseInt(document.getElementById('newChickenPrice').value);
+        const income = parseInt(document.getElementById('newChickenIncome').value);
+        const emoji = document.getElementById('newChickenEmoji').value;
+
+        if (!name || !desc || !price || !income || !emoji) {
+            tg.showAlert('❌ Заполните все поля');
+            return;
+        }
+
+        // Здесь запрос к серверу
+        tg.showAlert(`✅ Курица "${name}" добавлена!`);
+        
+        // Очищаем форму
+        document.getElementById('newChickenName').value = '';
+        document.getElementById('newChickenDesc').value = '';
+        document.getElementById('newChickenPrice').value = '';
+        document.getElementById('newChickenIncome').value = '';
+        document.getElementById('newChickenEmoji').value = '';
+        
+        hideAddChickenForm();
+        showChickenManagement(); // Обновляем список
+    }
+
+    function updateChicken(index) {
+        const price = document.getElementById(`price_${index}`).value;
+        const income = document.getElementById(`income_${index}`).value;
+        
+        // Здесь запрос к серверу
+        tg.showAlert(`✅ Данные курицы обновлены!`);
+    }
+
+    function uploadChickenPhoto(index) {
+        // В Telegram Mini App можно использовать метод для выбора фото
+        tg.showAlert('📸 Функция загрузки фото будет доступна в следующем обновлении');
+    }
+
+    // Управление промокодами
+    function showPromoManagement() {
+        const adminContent = document.getElementById('adminContent');
+        
+        // Моковые промокоды
+        const promos = [
+            { code: 'WELCOME-2024-0001', amount: 100, type: 'eggs', active: true, uses: 5, maxUses: 100 },
+            { code: 'BONUS-MARCH-50', amount: 50, type: 'rub', active: true, uses: 12, maxUses: 50 },
+            { code: 'EXPIRED-CODE-123', amount: 500, type: 'grass', active: false, uses: 100, maxUses: 100 }
+        ];
+
+        adminContent.innerHTML = `
+            <div style="background: white; border-radius: 16px; padding: 20px;">
+                <h3 style="margin-bottom: 15px;">🎫 Управление промокодами</h3>
+                
+                <div style="margin-bottom: 20px;">
+                    <button class="button" onclick="showCreatePromoForm()">
+                        <i class="fas fa-plus"></i> Создать промокод
+                    </button>
+                </div>
+                
+                <!-- Форма создания промокода -->
+                <div id="createPromoForm" class="hidden" style="margin-bottom: 20px;">
+                    <h4>✨ Новый промокод</h4>
+                    
+                    <input type="text" class="input-field" id="promoCode" placeholder="Код (XXXX-XXXX-XXXX)">
+                    
+                    <select class="input-field" id="promoType">
+                        <option value="eggs">🥚 Яйца</option>
+                        <option value="grass">🌿 Трава</option>
+                        <option value="rub">💰 Рубли</option>
+                    </select>
+                    
+                    <input type="number" class="input-field" id="promoAmount" placeholder="Сумма">
+                    
+                    <input type="number" class="input-field" id="promoMaxUses" placeholder="Макс. использований" value="1">
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="button" onclick="createPromoCode()">Создать</button>
+                        <button class="button secondary" onclick="hideCreatePromoForm()">Отмена</button>
+                    </div>
+                </div>
+                
+                <!-- Список промокодов -->
+                <div id="promosList">
+                    ${promos.map(p => `
+                        <div style="padding: 15px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <span style="font-family: monospace; font-size: 16px;"><b>${p.code}</b></span><br>
+                                    Награда: ${p.amount} ${getPromoTypeName(p.type)}<br>
+                                    Использовано: ${p.uses}/${p.maxUses}<br>
+                                </div>
+                                <div style="text-align: right;">
+                                    <span class="${p.active ? 'success' : 'error'}">${p.active ? '🟢 Активен' : '🔴 Неактивен'}</span><br>
+                                    <button class="button" style="width: auto; margin-top: 5px;" onclick="togglePromoStatus('${p.code}')">
+                                        ${p.active ? 'Деактивировать' : 'Активировать'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function getPromoTypeName(type) {
+        const types = {
+            'eggs': '🥚 яиц',
+            'grass': '🌿 травы',
+            'rub': '💰 рублей'
+        };
+        return types[type] || type;
+    }
+
+    function showCreatePromoForm() {
+        document.getElementById('createPromoForm').classList.remove('hidden');
+    }
+
+    function hideCreatePromoForm() {
+        document.getElementById('createPromoForm').classList.add('hidden');
+    }
+
+    function createPromoCode() {
+        const code = document.getElementById('promoCode').value;
+        const type = document.getElementById('promoType').value;
+        const amount = parseInt(document.getElementById('promoAmount').value);
+        const maxUses = parseInt(document.getElementById('promoMaxUses').value);
+
+        if (!code || !amount || !maxUses) {
+            tg.showAlert('❌ Заполните все поля');
+            return;
+        }
+
+        if (!code.match(/^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) {
+            tg.showAlert('❌ Неверный формат. Используйте XXXX-XXXX-XXXX');
+            return;
+        }
+
+        // Здесь запрос к серверу
+        tg.showAlert(`✅ Промокод ${code} создан!`);
+        
+        hideCreatePromoForm();
+        showPromoManagement(); // Обновляем список
+    }
+
+    function togglePromoStatus(code) {
+        // Здесь запрос к серверу
+        tg.showAlert(`✅ Статус промокода ${code} изменен`);
+        showPromoManagement(); // Обновляем список
+    }
+
+    // Рассылка
+    function showMailing() {
+        const adminContent = document.getElementById('adminContent');
+        
+        adminContent.innerHTML = `
+            <div style="background: white; border-radius: 16px; padding: 20px;">
+                <h3 style="margin-bottom: 15px;">📢 Рассылка пользователям</h3>
+                
+                <div style="margin-bottom: 15px;">
+                    <select class="input-field" id="mailingType">
+                        <option value="all">Всем пользователям</option>
+                        <option value="active">Только активным</option>
+                        <option value="with_refs">С рефералами (>0)</option>
+                        <option value="with_deposit">С пополнениями</option>
+                    </select>
+                </div>
+                
+                <textarea class="input-field" id="mailingMessage" rows="8" placeholder="Текст сообщения (можно использовать HTML)"></textarea>
+                
+                <div style="margin: 15px 0;">
+                    <label>
+                        <input type="checkbox" id="mailingWithPreview"> Отправить с превью
+                    </label>
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button class="button" onclick="sendMailing()">
+                        <i class="fas fa-paper-plane"></i> Отправить рассылку
+                    </button>
+                    <button class="button secondary" onclick="previewMailing()">
+                        <i class="fas fa-eye"></i> Предпросмотр
+                    </button>
+                </div>
+                
+                <div id="mailingStats" style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 12px;">
+                    <p>📊 Всего пользователей: 1,234</p>
+                    <p>✅ Активных сегодня: 567</p>
+                    <p>📨 Открываемость: 45%</p>
+                </div>
+            </div>
+        `;
+    }
+
+    function sendMailing() {
+        const message = document.getElementById('mailingMessage').value;
+        
+        if (!message.trim()) {
+            tg.showAlert('❌ Введите текст сообщения');
+            return;
+        }
+
+        // Здесь запрос к серверу
+        tg.showAlert(`✅ Рассылка запущена! Сообщение получат 1,234 пользователя.`);
+    }
+
+    function previewMailing() {
+        const message = document.getElementById('mailingMessage').value;
+        
+        if (!message.trim()) {
+            tg.showAlert('❌ Введите текст сообщения');
+            return;
+        }
+
+        // Показываем предпросмотр
+        tg.showAlert(`📧 Предпросмотр:\n\n${message}`);
+    }
+
+    // Статистика
+    function showStats() {
+        const adminContent = document.getElementById('adminContent');
+        
+        adminContent.innerHTML = `
+            <div style="background: white; border-radius: 16px; padding: 20px;">
+                <h3 style="margin-bottom: 15px;">📊 Статистика бота</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 16px;">
+                        <i class="fas fa-users" style="font-size: 30px;"></i>
+                        <h2 style="margin: 10px 0;">1,234</h2>
+                        <p>Всего пользователей</p>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white; padding: 20px; border-radius: 16px;">
+                        <i class="fas fa-user-plus" style="font-size: 30px;"></i>
+                        <h2 style="margin: 10px 0;">56</h2>
+                        <p>Новых сегодня</p>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; padding: 20px; border-radius: 16px;">
+                        <i class="fas fa-egg" style="font-size: 30px;"></i>
+                        <h2 style="margin: 10px 0;">15.2M</h2>
+                        <p>Всего яиц</p>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; padding: 20px; border-radius: 16px;">
+                        <i class="fas fa-coins" style="font-size: 30px;"></i>
+                        <h2 style="margin: 10px 0;">₽ 125,000</h2>
+                        <p>Выведено средств</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h4>Детальная статистика:</h4>
+                    
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;">Активных сегодня:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><b>567</b></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;">Активных за неделю:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><b>890</b></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;">Всего куплено куриц:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><b>12,345</b></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;">Сгенерировано сена:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><b>45.6M</b></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;">Пополнений сегодня:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><b>23 на сумму 45,000₽</b></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;">Выплат сегодня:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eee;"><b>5 на сумму 12,500₽</b></td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="button" onclick="exportStats()">
+                        <i class="fas fa-download"></i> Экспорт статистики
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function exportStats() {
+        tg.showAlert('📊 Статистика экспортирована в CSV файл');
+    }
+
+    // Настройки
+    function showSettings() {
+        const adminContent = document.getElementById('adminContent');
+        
+        adminContent.innerHTML = `
+            <div style="background: white; border-radius: 16px; padding: 20px;">
+                <h3 style="margin-bottom: 15px;">⚙️ Настройки бота</h3>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4>💰 Курсы валют</h4>
+                    
+                    <div style="margin: 15px 0;">
+                        <label>Курс сена → трава/яйца:</label>
+                        <input type="text" class="input-field" id="hayRate" value="100 сена = 0.5 травы + 0.5 яиц">
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <label>Курс травы → рубли:</label>
+                        <input type="text" class="input-field" id="grassRate" value="100 травы = 1₽">
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <label>Курс яиц → рубли:</label>
+                        <input type="text" class="input-field" id="eggRate" value="100 яиц = 1₽">
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4>🎁 Бонусы</h4>
+                    
+                    <div style="margin: 15px 0;">
+                        <label>Бонус за пополнение (%):</label>
+                        <input type="number" class="input-field" id="depositBonus" value="250">
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <label>Минимальная сумма для бонуса 400%:</label>
+                        <input type="number" class="input-field" id="bonusThreshold" value="500000">
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <label>Ежедневный бонус (мин-макс):</label>
+                        <input type="text" class="input-field" id="dailyBonus" value="100-500 яиц">
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4>👥 Реферальная система</h4>
+                    
+                    <div style="margin: 15px 0;">
+                        <label>Процент от пополнений реферала:</label>
+                        <input type="number" class="input-field" id="refPercent" value="35">
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <label>Бонус за приглашение:</label>
+                        <input type="number" class="input-field" id="refBonus" value="200 яиц">
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4>💸 Вывод средств</h4>
+                    
+                    <div style="margin: 15px 0;">
+                        <label>Минимальная сумма вывода:</label>
+                        <input type="number" class="input-field" id="minWithdraw" value="25000 травы">
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <label>Комиссия на вывод (%):</label>
+                        <input type="number" class="input-field" id="withdrawFee" value="0">
+                    </div>
+                </div>
+                
+                <button class="button" onclick="saveSettings()">
+                    <i class="fas fa-save"></i> Сохранить настройки
+                </button>
+            </div>
+        `;
+    }
+
+    function saveSettings() {
+        // Здесь запрос к серверу
+        tg.showAlert('✅ Настройки сохранены');
+    }
+
+    // Добавляем кнопку админ-панели при загрузке
+    setTimeout(addAdminButton, 500);
+
+    console.log('✅ Админ-панель CoinFlow загружена');
+
+    // --- ЧАСТЬ 4 ЗАВЕРШЕНА ---
+    // === КОД ЗАВЕРШЕН ===
+</script>
